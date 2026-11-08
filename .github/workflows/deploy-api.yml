@@ -51,3 +51,4 @@ jobs:
           resourceGroup: rg-workforce-app
           containerAppName: ca-workforce-api
           imageToDeploy: ${{ secrets.ACR_LOGIN_SERVER }}/workforce-api:${{ github.sha }}
+#
