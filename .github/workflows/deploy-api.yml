@@ -51,4 +51,7 @@ jobs:
           resourceGroup: rg-workforce-app
           containerAppName: ca-workforce-api
           imageToDeploy: ${{ secrets.ACR_LOGIN_SERVER }}/workforce-api:${{ github.sha }}
-#
+          # AÑADIMOS LAS LLAVES PARA QUE LA CONTAINER APP PUEDA ENTRAR AL ALMACÉN:
+          registryUrl: ${{ secrets.ACR_LOGIN_SERVER }}
+          registryUsername: ${{ secrets.ACR_USERNAME }}
+          registryPassword: ${{ secrets.ACR_PASSWORD }}
