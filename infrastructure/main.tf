@@ -88,6 +88,15 @@ resource "azurerm_container_app" "api" {
       latest_revision = true
     }
   }
+
+  # Evita que Terraform sobrescriba la imagen real y el puerto 8000 cuando GitHub Actions actualice la app
+  lifecycle {
+    ignore_changes = [
+      template[0].container[0].image,
+      ingress[0].target_port
+    ]
+  }
+
   depends_on = [
     azurerm_role_assignment.acr_pull
   ]
