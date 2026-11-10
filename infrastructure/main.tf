@@ -30,12 +30,39 @@ resource "azurerm_container_app_environment" "env" {
   log_analytics_workspace_id = azurerm_log_analytics_workspace.law.id
 }
 
-# 5. Azure Container App (La API en sí misma)
+# 5. Identidad Gestionada específica para la Container App (Resuelve la restricción Express)
+resource "azurerm_user_assigned_identity" "ca_api_identity" {
+  name                = "id-ca-workforce-api"
+  location            = azurerm_resource_group.app_rg.location
+  resource_group_name = azurerm_resource_group.app_rg.name
+}
+
+# 5.1 Permiso explícito para que la App descargue del Registro
+resource "azurerm_role_assignment" "acr_pull" {
+  scope                            = azurerm_container_registry.acr.id
+  role_definition_name             = "AcrPull"
+  principal_id                     = azurerm_user_assigned_identity.ca_api_identity.principal_id
+  skip_service_principal_aad_check = true
+}
+
+# 5.2 Azure Container App (La API)
 resource "azurerm_container_app" "api" {
   name                         = "ca-workforce-api"
   container_app_environment_id = azurerm_container_app_environment.env.id
   resource_group_name          = azurerm_resource_group.app_rg.name
   revision_mode                = "Single"
+
+  # A. Asignamos la identidad de usuario creada previamente
+  identity {
+    type         = "UserAssigned"
+    identity_ids = [azurerm_user_assigned_identity.ca_api_identity.id]
+  }
+
+  # B. Enlazamos el ACR usando la ID exacta de la Identidad Gestionada
+  registry {
+    server   = azurerm_container_registry.acr.login_server
+    identity = azurerm_user_assigned_identity.ca_api_identity.id
+  }
 
   template {
     container {
@@ -61,4 +88,31 @@ resource "azurerm_container_app" "api" {
       latest_revision = true
     }
   }
+  depends_on = [
+    azurerm_role_assignment.acr_pull
+  ]
+}
+
+# 7. Identidad Gestionada para GitHub Actions (Gestionada 100% por Terraform)
+resource "azurerm_user_assigned_identity" "github_actions" {
+  name                = "id-github-actions"
+  location            = azurerm_resource_group.app_rg.location
+  resource_group_name = azurerm_resource_group.app_rg.name
+}
+
+# 8. Asignación de Rol Contributor 
+resource "azurerm_role_assignment" "github_contributor" {
+  scope                = azurerm_resource_group.app_rg.id
+  role_definition_name = "Contributor"
+  principal_id         = azurerm_user_assigned_identity.github_actions.principal_id
+}
+
+# 9. Credencial Federada OIDC
+resource "azurerm_federated_identity_credential" "github_oidc" {
+  name                = "cred-github-actions"
+  resource_group_name = azurerm_resource_group.app_rg.name
+  parent_id           = azurerm_user_assigned_identity.github_actions.id
+  audience            = ["api://AzureADTokenExchange"]
+  issuer              = "https://token.actions.githubusercontent.com"
+  subject             = "repo:Pamelaxpr@188255722/azure-serverless-workforce-poc@1448476566:ref:refs/heads/main"
 }

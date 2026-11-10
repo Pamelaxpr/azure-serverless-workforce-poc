@@ -20,3 +20,6 @@ terraform {
 provider "azurerm" {
   features {}
 }
+
+# Declaración explícita del Data Source que lee las credenciales activas de tu consola
+data "azurerm_client_config" "current" {}
