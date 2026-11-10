@@ -44,7 +44,7 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      # 5. Despliegue Real: Reemplazamos la Imagen Fantasma en Azure Container Apps
+      # 5. Despliegue Real en Azure Container Apps (Zero Trust)
       - name: Deploy to Azure Container Apps
         uses: azure/container-apps-deploy-action@v1
         with:
@@ -52,7 +52,3 @@ jobs:
           containerAppName: ca-workforce-api
           imageToDeploy: ${{ secrets.ACR_LOGIN_SERVER }}/workforce-api:${{ github.sha }}
           managedIdentityClientId: ${{ secrets.AZURE_CA_IDENTITY_CLIENT_ID }}
-          # AÑADIMOS LAS LLAVES PARA QUE LA CONTAINER APP PUEDA ENTRAR AL ALMACÉN:
-          registryUrl: ${{ secrets.ACR_LOGIN_SERVER }}
-          registryUsername: ${{ secrets.ACR_USERNAME }}
-          registryPassword: ${{ secrets.ACR_PASSWORD }}
