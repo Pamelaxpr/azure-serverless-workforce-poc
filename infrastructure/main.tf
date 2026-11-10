@@ -72,6 +72,16 @@ resource "azurerm_container_app" "api" {
       image  = "mcr.microsoft.com/azuredocs/containerapps-helloworld:latest"
       cpu    = 0.25
       memory = "0.5Gi"
+      # Variables de entorno para la integración con Azure SDK en FastAPI
+      env {
+        name  = "AZURE_STORAGE_ACCOUNT_NAME"
+        value = azurerm_storage_account.storage.name
+      }
+
+      env {
+        name  = "AZURE_STORAGE_QUEUE_NAME"
+        value = azurerm_storage_queue.time_tracking_queue.name
+      }
     }
     # Restricciones de Negocio de nuestro PMO:
     min_replicas = 1
