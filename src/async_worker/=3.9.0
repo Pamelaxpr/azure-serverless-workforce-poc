@@ -1,0 +1,21 @@
+Collecting azure-data-tables
+  Downloading azure_data_tables-12.7.0-py3-none-any.whl.metadata (38 kB)
+Requirement already satisfied: aiohttp in /mnt/e/GitHub/azure-serverless-workforce-poc/venv/lib/python3.14/site-packages (3.14.5)
+Requirement already satisfied: azure-core>=1.29.4 in /mnt/e/GitHub/azure-serverless-workforce-poc/venv/lib/python3.14/site-packages (from azure-data-tables) (1.41.0)
+Requirement already satisfied: yarl>=1.0 in /mnt/e/GitHub/azure-serverless-workforce-poc/venv/lib/python3.14/site-packages (from azure-data-tables) (1.25.1)
+Requirement already satisfied: isodate>=0.6.1 in /mnt/e/GitHub/azure-serverless-workforce-poc/venv/lib/python3.14/site-packages (from azure-data-tables) (0.7.2)
+Requirement already satisfied: typing-extensions>=4.3.0 in /mnt/e/GitHub/azure-serverless-workforce-poc/venv/lib/python3.14/site-packages (from azure-data-tables) (4.16.0)
+Requirement already satisfied: aiohappyeyeballs>=2.5.0 in /mnt/e/GitHub/azure-serverless-workforce-poc/venv/lib/python3.14/site-packages (from aiohttp) (2.7.1)
+Requirement already satisfied: aiosignal>=1.4.0 in /mnt/e/GitHub/azure-serverless-workforce-poc/venv/lib/python3.14/site-packages (from aiohttp) (1.4.0)
+Requirement already satisfied: attrs>=17.3.0 in /mnt/e/GitHub/azure-serverless-workforce-poc/venv/lib/python3.14/site-packages (from aiohttp) (26.1.0)
+Requirement already satisfied: frozenlist>=1.1.1 in /mnt/e/GitHub/azure-serverless-workforce-poc/venv/lib/python3.14/site-packages (from aiohttp) (1.8.0)
+Requirement already satisfied: multidict<8.0,>=4.5 in /mnt/e/GitHub/azure-serverless-workforce-poc/venv/lib/python3.14/site-packages (from aiohttp) (7.2.1)
+Requirement already satisfied: propcache>=0.2.0 in /mnt/e/GitHub/azure-serverless-workforce-poc/venv/lib/python3.14/site-packages (from aiohttp) (0.5.4)
+Requirement already satisfied: idna>=2.0 in /mnt/e/GitHub/azure-serverless-workforce-poc/venv/lib/python3.14/site-packages (from yarl>=1.0->azure-data-tables) (3.20)
+Requirement already satisfied: requests>=2.21.0 in /mnt/e/GitHub/azure-serverless-workforce-poc/venv/lib/python3.14/site-packages (from azure-core>=1.29.4->azure-data-tables) (2.34.2)
+Requirement already satisfied: charset_normalizer<4,>=2 in /mnt/e/GitHub/azure-serverless-workforce-poc/venv/lib/python3.14/site-packages (from requests>=2.21.0->azure-core>=1.29.4->azure-data-tables) (3.5.2)
+Requirement already satisfied: urllib3<3,>=1.26 in /mnt/e/GitHub/azure-serverless-workforce-poc/venv/lib/python3.14/site-packages (from requests>=2.21.0->azure-core>=1.29.4->azure-data-tables) (2.8.0)
+Requirement already satisfied: certifi>=2023.5.7 in /mnt/e/GitHub/azure-serverless-workforce-poc/venv/lib/python3.14/site-packages (from requests>=2.21.0->azure-core>=1.29.4->azure-data-tables) (2026.10.23)
+Downloading azure_data_tables-12.7.0-py3-none-any.whl (133 kB)
+Installing collected packages: azure-data-tables
+Successfully installed azure-data-tables-12.7.0
