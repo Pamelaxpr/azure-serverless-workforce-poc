@@ -69,7 +69,7 @@ resource "azurerm_container_app" "api" {
       name = "api-ingestion"
       # IMAGEN FANTASMA: Desplegamos un Hola Mundo genérico. 
       # GitHub Actions sobreescribirá esto después con nuestra verdadera API.
-      image  = "mcr.microsoft.com/azuredocs/containerapps-helloworld:latest"
+      image  = "${azurerm_container_registry.acr.login_server}/api-ingestion:latest"
       cpu    = 0.25
       memory = "0.5Gi"
       # Variables de entorno para la integración con Azure SDK en FastAPI
@@ -82,6 +82,11 @@ resource "azurerm_container_app" "api" {
         name  = "AZURE_STORAGE_QUEUE_NAME"
         value = azurerm_storage_queue.time_tracking_queue.name
       }
+
+      env {
+        name  = "AZURE_CLIENT_ID"
+        value = azurerm_user_assigned_identity.ca_api_identity.client_id
+      }
     }
     # Restricciones de Negocio de nuestro PMO:
     min_replicas = 1
@@ -91,7 +96,8 @@ resource "azurerm_container_app" "api" {
   ingress {
     allow_insecure_connections = false
     external_enabled           = true
-    target_port                = 80 # El puerto del Hello World fantasma. Lo cambiaremos a 8000 en el pipeline.
+    target_port                = 8000 # El puerto del Hello World fantasma. Lo cambiaremos a 8000 en el pipeline.
+    transport                  = "auto"
 
     traffic_weight {
       percentage      = 100
@@ -102,8 +108,7 @@ resource "azurerm_container_app" "api" {
   # Evita que Terraform sobrescriba la imagen real y el puerto 8000 cuando GitHub Actions actualice la app
   lifecycle {
     ignore_changes = [
-      template[0].container[0].image,
-      ingress[0].target_port
+      template[0].container[0].image
     ]
   }
 
