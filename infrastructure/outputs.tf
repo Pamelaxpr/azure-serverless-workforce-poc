@@ -38,3 +38,13 @@ output "ca_identity_client_id" {
   description = "Client ID de la Identidad Gestionada de la Container App"
   value       = azurerm_user_assigned_identity.ca_api_identity.client_id
 }
+
+output "storage_table_name" {
+  description = "Nombre de la tabla en Azure Table Storage"
+  value       = azurerm_storage_table.attendance_table.name
+}
+
+output "worker_identity_client_id" {
+  description = "Client ID de la Managed Identity del servicio consumidor (Worker)"
+  value       = azurerm_user_assigned_identity.worker_identity.client_id
+}
