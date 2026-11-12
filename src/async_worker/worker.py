@@ -4,6 +4,7 @@ import logging
 import os
 import signal
 from datetime import datetime, timezone
+from business_rules import evaluate_attendance
 
 from azure.data.tables.aio import TableClient
 from azure.identity.aio import DefaultAzureCredential
@@ -37,6 +38,9 @@ def build_table_entity(payload: dict, message_id: str) -> dict:
 
     location = payload.get("location") or {}
 
+    # Evaluamos la lógica de negocio contra el cuadrante simulado
+    audit_result = evaluate_attendance(payload)
+
     return {
         "PartitionKey": str(payload["employee_id"]),
         "RowKey": f"{safe_ts}_{message_id}",
@@ -44,6 +48,10 @@ def build_table_entity(payload: dict, message_id: str) -> dict:
         "EventTimestamp": raw_ts,
         "Latitude": float(location.get("latitude", 0.0)),
         "Longitude": float(location.get("longitude", 0.0)),
+        "ValidationStatus": audit_result["ValidationStatus"],
+        "AnomalyReason": audit_result["AnomalyReason"],
+        "AssignedShift": audit_result["AssignedShift"],
+        "DistanceMeters": audit_result["DistanceMeters"],
         "ProcessedAt": datetime.now(timezone.utc).isoformat(),
         "QueueMessageId": message_id,
     }
