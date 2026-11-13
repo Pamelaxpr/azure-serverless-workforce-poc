@@ -91,6 +91,14 @@ jobs:
       - name: Update Worker Container App
         run: |
           az config set extension.use_dynamic_install=yes_without_prompt
+          WORKER_ID=$(az identity show --name id-workforce-worker --resource-group rg-workforce-app --query id -o tsv)
+
+          az containerapp registry set \
+            --name ca-workforce-worker \
+            --resource-group rg-workforce-app \
+            --server ${{ secrets.ACR_LOGIN_SERVER }} \
+            --identity "$WORKER_ID"
+
           az containerapp update \
             --name ca-workforce-worker \
             --resource-group rg-workforce-app \
