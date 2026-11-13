@@ -88,18 +88,19 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Update Worker Container App
+      - name: Get Worker Identity Client ID
+        id: worker-id
         run: |
-          az config set extension.use_dynamic_install=yes_without_prompt
-          WORKER_ID=$(az identity show --name id-workforce-worker --resource-group rg-workforce-app --query id -o tsv)
-
-          az containerapp registry set \
-            --name ca-workforce-worker \
+          CLIENT_ID=$(az identity show \
+            --name id-workforce-worker \
             --resource-group rg-workforce-app \
-            --server ${{ secrets.ACR_LOGIN_SERVER }} \
-            --identity "$WORKER_ID"
+            --query clientId -o tsv)
+          echo "client_id=$CLIENT_ID" >> $GITHUB_OUTPUT
 
-          az containerapp update \
-            --name ca-workforce-worker \
-            --resource-group rg-workforce-app \
-            --image ${{ secrets.ACR_LOGIN_SERVER }}/workforce-worker:${{ github.sha }}
+      - name: Deploy Worker to Azure Container Apps
+        uses: azure/container-apps-deploy-action@v1
+        with:
+          resourceGroup: rg-workforce-app
+          containerAppName: ca-workforce-worker
+          imageToDeploy: ${{ secrets.ACR_LOGIN_SERVER }}/workforce-worker:${{ github.sha }}
+          managedIdentityClientId: ${{ steps.worker-id.outputs.client_id }}
