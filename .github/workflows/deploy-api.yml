@@ -78,7 +78,7 @@ jobs:
       - name: Build and Push Worker Image
         run: |
           IMAGE_TAG=${{ secrets.ACR_LOGIN_SERVER }}/workforce-worker:${{ github.sha }}
-          docker build -t $IMAGE_TAG -f .src/async_worker/Dockerfile .
+          docker build -t $IMAGE_TAG .src/async_worker
           docker push $IMAGE_TAG
 
       - name: Azure Login via OIDC
