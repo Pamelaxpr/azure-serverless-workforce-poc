@@ -143,6 +143,8 @@ jobs:
             --name id-workforce-panel \
             --resource-group rg-workforce-app \
             --query clientId -o tsv)
+          echo "CLIENT_ID obtenido: $CLIENT_ID"
+          test -n "$CLIENT_ID"
           echo "client_id=$CLIENT_ID" >> $GITHUB_OUTPUT
 
       - name: Deploy Panel to Azure Container Apps
