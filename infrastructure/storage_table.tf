@@ -32,3 +32,10 @@ resource "azurerm_role_assignment" "local_dev_table_contributor" {
   role_definition_name = "Storage Table Data Contributor"
   principal_id         = data.azurerm_client_config.current.object_id
 }
+
+# 6. Permiso RBAC de solo lectura para que la API consulte fichajes procesados
+resource "azurerm_role_assignment" "api_table_reader" {
+  scope                = azurerm_storage_account.storage.id
+  role_definition_name = "Storage Table Data Reader"
+  principal_id         = azurerm_user_assigned_identity.ca_api_identity.principal_id
+}
