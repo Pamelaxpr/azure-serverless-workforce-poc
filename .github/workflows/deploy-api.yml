@@ -148,9 +148,25 @@ jobs:
           echo "client_id=$CLIENT_ID" >> $GITHUB_OUTPUT
 
       - name: Deploy Panel to Azure Container Apps
-        uses: azure/container-apps-deploy-action@v1
-        with:
-          resourceGroup: rg-workforce-app
-          containerAppName: ca-workforce-panel
-          imageToDeploy: ${{ secrets.ACR_LOGIN_SERVER }}/workforce-panel:${{ github.sha }}
-          managedIdentityClientId: ${{ steps.panel-id.outputs.client_id }}
+        run: |
+          az config set extension.use_dynamic_install=yes_without_prompt
+
+          # Obtiene el ID exacto (respetando mayúsculas/minúsculas) ya asignado a la app
+          IDENTITY_ID=$(az containerapp show \
+            --name ca-workforce-panel \
+            --resource-group rg-workforce-app \
+            --query "keys(identity.userAssignedIdentities)[0]" -o tsv)
+
+          echo "Identidad detectada: $IDENTITY_ID"
+          test -n "$IDENTITY_ID"
+
+          az containerapp registry set \
+            --name ca-workforce-panel \
+            --resource-group rg-workforce-app \
+            --server ${{ secrets.ACR_LOGIN_SERVER }} \
+            --identity "$IDENTITY_ID"
+
+          az containerapp update \
+            --name ca-workforce-panel \
+            --resource-group rg-workforce-app \
+            --image ${{ secrets.ACR_LOGIN_SERVER }}/workforce-panel:${{ github.sha }}
